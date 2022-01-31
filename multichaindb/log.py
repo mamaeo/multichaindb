@@ -38,7 +38,7 @@ DEFAULT_LOGGING_CONFIG = {
         },
         'file': {
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': os.path.join(DEFAULT_LOG_DIR, 'bigchaindb.log'),
+            'filename': os.path.join(DEFAULT_LOG_DIR, 'multichaindb.log'),
             'mode': 'w',
             'maxBytes':  209715200,
             'backupCount': 5,
@@ -47,7 +47,7 @@ DEFAULT_LOGGING_CONFIG = {
         },
         'errors': {
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': os.path.join(DEFAULT_LOG_DIR, 'bigchaindb-errors.log'),
+            'filename': os.path.join(DEFAULT_LOG_DIR, 'multichaindb-errors.log'),
             'mode': 'w',
             'maxBytes':  209715200,
             'backupCount': 5,
