@@ -2,3 +2,7 @@
 python3-rapidjson
 base58
 cryptoconditions
+packaging
+setproctitle
+abci
+requests
