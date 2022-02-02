@@ -6,3 +6,8 @@ packaging
 setproctitle
 abci
 requests
+flask-restful
+flask-cors
+gunicorn
+aiohttp
+python-arango

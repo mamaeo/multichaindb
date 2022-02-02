@@ -26,8 +26,8 @@ _database_keys_map = {
 }
 
 _base_database_localarangodb = {
-    'host': 'localhost',
-    'port': 8529,
+    'host': 'http://localhost',     # default host
+    'port': 8529,                   # default port
     'name': 'multichaindb',
     'replicaset': None,
     'login': None,
