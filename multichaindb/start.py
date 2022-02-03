@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 BANNER = """
 ****************************************************************************
 *                                                                          *
-*                             MultiChainDB 2.2.2                           *
+*                             MultiChainDB 1.0                             *
 *   codename "jumping sloth"                                               *
 *   Initialization complete. MultiChainDB Server is ready and waiting.     *
 *                                                                          *

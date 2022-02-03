@@ -25,17 +25,17 @@ Base class for validation methods (verification of votes, blocks, and transactio
 
 ### [`processes.py`](./processes.py)
 
-Entry point for the BigchainDB process, after initialization.  All subprocesses are started here: processes to handle new blocks, votes, etc.
+Entry point for the MultiChainDB process, after initialization.  All subprocesses are started here: processes to handle new blocks, votes, etc.
 
 ### [`config_utils.py`](./config_utils.py)
 
-Methods for managing the configuration, including loading configuration files, automatically generating the configuration, and keeping the configuration consistent across BigchainDB instances.
+Methods for managing the configuration, including loading configuration files, automatically generating the configuration, and keeping the configuration consistent across MultiChainDB instances.
 
 ## Folders
 
 ### [`commands`](./commands)
 
-Contains code for the [CLI](https://docs.bigchaindb.com/projects/server/en/latest/server-reference/bigchaindb-cli.html) for BigchainDB.
+Contains code for the [CLI](https://docs.bigchaindb.com/projects/server/en/latest/server-reference/bigchaindb-cli.html) for MultiChainDB.
 
 ### [`db`](./db)
 

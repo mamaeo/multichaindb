@@ -1,0 +1,103 @@
+
+version: '1.0'
+
+services:
+  # Build: docker-compose build -d multichaindb
+  # Run: docker-compose run -d bdb
+  arangodb:
+    image: arangodb
+    ports:
+      - "8529:8529"
+    command: arangodb
+    restart: always
+  multichaindb:
+    depends_on:
+      - arangodb
+      - tendermint
+    build:
+      context: .
+      dockerfile: Dockerfile-dev
+    # volumes key mounts the project directories on the host to /usr/src/app inside the container, 
+    # allowing you to modify the code on the fly, without having to rebuild the image
+    volumes:
+      - ./multichaindb:/usr/src/app/multichaindb
+      - ./tests:/usr/src/app/tests
+      - ./docs:/usr/src/app/docs
+      - ./htmlcov:/usr/src/app/htmlcov
+      - ./setup.py:/usr/src/app/setup.py
+      - ./setup.cfg:/usr/src/app/setup.cfg
+      - ./pytest.ini:/usr/src/app/pytest.ini
+      - ./tox.ini:/usr/src/app/tox.ini
+    environment:
+      MULTICHAINDB_DATABASE_BACKEND: localarangodb
+      MULTICHAINDB_DATABASE_HOST: arangodb
+      MULTICHAINDB_DATABASE_PORT: 8529
+      MULTICHAINDB_SERVER_BIND: 0.0.0.0:9984
+      MULTICHAINDB_WSSERVER_HOST: 0.0.0.0
+      MULTICHAINDB_WSSERVER_ADVERTISED_HOST: multichaindb
+      MULTICHAINDB_TENDERMINT_HOST: tendermint
+      MULTICHAINDB_TENDERMINT_PORT: 26657
+    ports:
+      - "9984:9984"
+      - "9985:9985"
+      - "26658"
+    healthcheck:
+      test: ["CMD", "bash", "-c", "curl http://multichaindb:9984 && curl http://tendermint:26657/abci_query"]
+      interval: 3s
+      timeout: 5s
+      retries: 3
+    command: '.ci/entrypoint.sh'
+    restart: always
+  tendermint:
+    image: tendermint/tendermint:v0.31.5
+    # volumes:
+    #   - ./tmdata:/tendermint
+    entrypoint: ''
+    ports:
+      - "26656:26656"
+      - "26657:26657"
+    command: sh -c "tendermint init && tendermint node --consensus.create_empty_blocks=false --proxy_app=tcp://multichaindb:26658"
+    restart: always
+  mdb:
+    image: busybox
+    depends_on:
+      multichaindb:
+        condition: service_healthy
+
+
+  # curl client to check the health of development env
+  curl-client:
+    image: appropriate/curl
+    command: /bin/sh -c "curl -s http://multichaindb:9984/ > /dev/null && curl -s http://tendermint:26657/ > /dev/null"
+
+  # MultiChainDB setup to do acceptance testing with Python
+  python-acceptance:
+    build:
+      context: .
+      dockerfile: ./acceptance/python/Dockerfile
+    volumes:
+      - ./acceptance/python/docs:/docs
+      - ./acceptance/python/src:/src
+    environment:
+      - MULTICHAINDB_ENDPOINT=multichaindb
+
+  # Build docs only
+  # docker-compose build bdocs
+  # docker-compose up -d bdocs
+  bdocs:
+    depends_on:
+      - vdocs
+    build:
+      context: .
+      dockerfile: Dockerfile-dev
+      args:
+        backend: localarangodb
+    volumes:
+      - .:/usr/src/app/
+    command: make -C docs/root html
+  vdocs:
+    image: nginx
+    ports:
+      - '33333:80'
+    volumes:
+      - ./docs/root/build/html:/usr/share/nginx/html
