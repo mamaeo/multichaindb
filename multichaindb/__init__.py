@@ -7,18 +7,18 @@ import copy
 import logging
 
 from multichaindb.log import DEFAULT_LOGGING_CONFIG as log_config
-from multichaindb.lib import BigchainDB  # noqa
+from multichaindb.lib import MultiChainDB  # noqa
 from multichaindb.migrations.chain_migration_election import ChainMigrationElection
 from multichaindb.version import __version__  # noqa
 from multichaindb.core import App  # noqa
 
 # from functools import reduce
-# PORT_NUMBER = reduce(lambda x, y: x * y, map(ord, 'BigchainDB')) % 2**16
+# PORT_NUMBER = reduce(lambda x, y: x * y, map(ord, 'MultiChainDB')) % 2**16
 # basically, the port number is 9984
 
 # The following variable is used by `multichaindb configure` to
 # prompt the user for database values. We cannot rely on
-# _base_database_localmongodb.keys() because dicts are unordered.
+# _base_database_localarangodb.keys() because dicts are unordered.
 # I tried to configure
 
 _database_keys_map = {

@@ -130,8 +130,8 @@ setup(
 
     packages=find_packages(exclude=['tests*']),
 
-    scripts=['pkg/scripts/multichaindb-monit-config'],
-
+    #scripts=['pkg/scripts/multichaindb-monit-config'],
+    
     entry_points={
         'console_scripts': [
             'multichaindb=multichaindb.commands.multichaindb:main'

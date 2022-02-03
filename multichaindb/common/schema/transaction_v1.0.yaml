@@ -38,7 +38,7 @@ properties:
     "$ref": "#/definitions/metadata"
   version:
     type: string
-    pattern: "^1\\.0$"
+    pattern: "^2\\.0$"
 definitions:
   offset:
     type: integer
@@ -63,7 +63,9 @@ definitions:
     enum:
     - CREATE
     - TRANSFER
-    - GENESIS
+    - VALIDATOR_ELECTION
+    - CHAIN_MIGRATION_ELECTION
+    - VOTE
   asset:
     type: object
     additionalProperties: false
