@@ -31,5 +31,7 @@ ENV MULTICHAINDB_CI_ABCI ${abci_status}
 RUN mkdir -p /usr/src/app
 COPY . /usr/src/app/
 WORKDIR /usr/src/app
+# Add this command in order to avoid ssl error during some libraries installation
+RUN pip install --upgrade pip --trusted-host pypi.org --trusted-host files.pythonhosted.org 
 RUN pip install -e .[dev]
 RUN multichaindb -y configure
