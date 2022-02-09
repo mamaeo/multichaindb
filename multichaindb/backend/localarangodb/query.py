@@ -2,7 +2,6 @@
 
 """Query implementation for arangoDB"""
 
-import pyArango
 
 from multichaindb import backend
 from multichaindb.backend.exceptions import DuplicateKeyError

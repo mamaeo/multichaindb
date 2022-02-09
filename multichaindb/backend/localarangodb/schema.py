@@ -2,7 +2,9 @@
 
 import logging
 
-import pyArango
+from pyArango.theExceptions import (
+    CreationError
+)
 
 from multichaindb import backend
 from multichaindb.backend.localarangodb.connection import LocalArangoDBConnection
@@ -60,8 +62,8 @@ def create_tables(conn, dbname):
         # TODO: read and write concerns can be declared here
         try:
             logger.info(f'Create `{table_name}` table.')
-            conn.conn[dbname].createCollection(table_name)
-        except pyArango.theExceptions.CreationError:
+            conn.conn[dbname].createCollection(name=table_name)
+        except CreationError:
             logger.info(f'Collection {table_name} already exists.')
         create_indexes(conn, dbname, table_name, INDEXES[table_name])
 
@@ -69,7 +71,7 @@ def create_tables(conn, dbname):
 def create_indexes(conn, dbname, collection, indexes):
     logger.info(f'Ensure secondary indexes for `{collection}`.')
     for fields, kwargs in indexes:
-        conn.conn[dbname].ensureHashIndex(fields, **kwargs)
+        conn.conn[dbname][collection].ensureHashIndex(fields, **kwargs)
 
 
 @register_schema(LocalArangoDBConnection)
