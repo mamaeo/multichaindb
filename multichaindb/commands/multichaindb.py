@@ -148,10 +148,10 @@ def run_election_new_upsert_validator(args, multichain):
 
     :param args: dict
         args = {
-        'public_key': the public key of the proposed peer, (str)
-        'power': the proposed validator power for the new peer, (str)
-        'node_id': the node_id of the new peer (str)
-        'sk': the path to the private key of the node calling the election (str)
+            'public_key': the public key of the proposed peer, (str)
+            'power': the proposed validator power for the new peer, (str)
+            'node_id': the node_id of the new peer (str)
+            'sk': the path to the private key of the node calling the election (str)
         }
     :param multichain: an instance of MultiChainDB
     :return: election_id or `False` in case of failure

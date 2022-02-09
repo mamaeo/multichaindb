@@ -8,8 +8,10 @@ services:
     image: arangodb/arangodb
     ports:
       - "8529:8529"
-    command: arangodb
+    command: arangod
     restart: always
+    environment:
+      - ARANGO_ROOT_PASSWORD=openSesame
   multichaindb:
     depends_on:
       - arangodb

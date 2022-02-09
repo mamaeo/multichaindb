@@ -12,7 +12,7 @@ determined according to the following rules:
 * Otherwise, if it's set in a local config file, then use that
   value
 * Otherwise, use the default value (contained in
-  ``bigchaindb.__init__``)
+  ``multichaindb.__init__``)
 """
 
 

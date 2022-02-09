@@ -1,8 +1,10 @@
 
 import logging
+from pydoc import cli
 from ssl import CERT_REQUIRED
 
-import arango
+import pyArango
+from pyArango.connection import Connection
 
 from multichaindb.backend.connection import Connection
 from multichaindb.backend.exceptions import (
@@ -61,14 +63,14 @@ class LocalArangoDBConnection(Connection):
     def run(self, query):
         try:
             try:
-                return query.run(self.conn)
-            except arango.exceptions.ArangoServerError:
+                return query.run(self.conn[self.dbname])
+            except pyArango.theExceptions.ConnectionError:
                 logger.warning('Lost connection to the database, '
                                'retrying query.')
-                return query.run(self.conn)
-        except arango.exceptions.ServerConnectionError as exc:
+                return query.run(self.conn[self.dbname])
+        except pyArango.theExceptions.ArangoError as exc:
             raise ConnectionError from exc
-        except arango.exceptions.ArangoServerError as exc:
+        except pyArango.theExceptions.AQLFetchError as exc:
             print(f'DETAILS: {exc.message}')
             raise OperationError from exc
 
@@ -93,22 +95,20 @@ class LocalArangoDBConnection(Connection):
             # use of certificates for TLS connectivity.
             if self.ca_cert is None or self.certfile is None or \
                 self.keyfile is None or self.crlfile is None:
-                
-                url = f'{self.host}:{self.port}'
-                client = arango.ArangoClient(url, resolver_max_tries=self.max_tries)
 
-                if self.login is not None and self.password is not None:
-                    client_db = client.db(self.dbname, username=self.login, password=self.password)
-            
+                url = 'http://{}:{}'.format(self.host, self.port)
+                client = Connection(arangoURL=url, username=self.login, 
+                    password=self.password)
+
             else:
                 # NOTE! Must be implemented!!
                 pass
 
-            return client_db
+            return client
 
-        except arango.exceptions.ServerConnectionError as exc:
+        except pyArango.theExceptions.ConnectionError as exc:
             logger.info('Exception in _connect(): {}'.format(exc))
             raise ConnectionError(str(exc)) from exc
-        except arango.exceptions.ArangoServerError as exc:
+        except pyArango.theExceptions.ArangoError as exc:
             raise ConfigurationError from exc
 

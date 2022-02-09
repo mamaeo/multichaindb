@@ -82,7 +82,7 @@ install_requires = [
     'logstats==0.3.0',
     'packaging>=20.9',
     # TODO Consider not installing the db drivers, or putting them in extras.
-    'python-arango==7.3.1',
+    'pyArango==2.0.1',
     'python-rapidjson==1.0',
     'pyyaml==5.4.1',
     'requests==2.25.1',
