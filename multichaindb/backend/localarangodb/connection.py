@@ -63,15 +63,14 @@ class LocalArangoDBConnection(Connection):
         """
         return self.query()[self.dbname][name]
 
-
     def run(self, query):
         try:
             try:
-                return query.run(self.conn[self.dbname])
+                return query.run(self.conn)
             except ConnectionError:
                 logger.warning('Lost connection to the database, '
                                'retrying query.')
-                return query.run(self.conn[self.dbname])
+                return query.run(self.conn)
         except ArangoError as exc:
             raise ConnectionError from exc
         except AQLFetchError as exc:
