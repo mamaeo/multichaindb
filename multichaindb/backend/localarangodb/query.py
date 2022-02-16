@@ -3,11 +3,6 @@
 """Query implementation for arangoDB"""
 
 
-import json
-from turtle import update
-from pyArango.theExceptions import (
-    CreationError
-)
 
 from multichaindb import backend
 from multichaindb.backend.exceptions import DuplicateKeyError
@@ -21,13 +16,12 @@ register_query = module_dispatch_registrar(backend.query)
 @register_query(LocalArangoDBConnection)
 def store_transactions(conn, signed_transactions):
     # Create list of documents
-    return [conn.db['transactions']
-            .createDocument(tx).save() for tx in signed_transactions]
+    pass
 
 
 @register_query(LocalArangoDBConnection)
 def get_transaction(conn, transaction_id):
-    return conn.collection('transactions')[transaction_id]
+    pass
 
 
 @register_query(LocalArangoDBConnection)
@@ -57,7 +51,7 @@ def store_assets(conn, assets):
 
 @register_query(LocalArangoDBConnection)
 def get_asset(conn, asset_id):
-    return conn.run(conn.collection('asset')[asset_id])
+    pass
 
 
 @register_query(LocalArangoDBConnection)
@@ -72,20 +66,13 @@ def get_spent(conn, transaction_id, output):
 
 @register_query(LocalArangoDBConnection)
 def get_latest_block(conn):
-    res = (conn.db['blocks']
-            .fetchFirstExample({ 'height': conn.db['blocks'].count() - 1 }))
-    return next(res) if len(res) > 0 else None
+    pass
     
 
 
 @register_query(LocalArangoDBConnection)
 def store_block(conn, block):
-    try:
-        return conn.run(conn.collection('blocks')
-            .createDocument(block)
-            .save())
-    except CreationError:
-        pass
+    pass
 
 
 @register_query(LocalArangoDBConnection)
@@ -145,9 +132,7 @@ def get_unspent_outputs(conn, *, query=None):
 
 @register_query(LocalArangoDBConnection)
 def store_pre_commit_state(conn, state):
-    return conn.run(conn.collection('pre_commit')
-        .createDocument(state)
-        .save())
+    pass
 
 
 @register_query(LocalArangoDBConnection)
@@ -158,13 +143,7 @@ def get_pre_commit_state(conn):
 # Non va bene
 @register_query(LocalArangoDBConnection)
 def store_validator_set(conn, validators_update):
-    res = conn.db['validators'].fetchFirstExample({'height': validators_update['height']})
-    doc = next(res) if len(res) > 0 else conn.db['validators'].createDocument()
-    # Force document to update to new values whatever it is a new document 
-    # or an existing one
-    doc.set(validators_update)
-    doc.save()
-    return doc
+    pass
 
 
 @register_query(LocalArangoDBConnection)
@@ -204,22 +183,15 @@ def get_asset_tokens_for_public_key(conn, asset_id, public_key):
 
 @register_query(LocalArangoDBConnection)
 def store_abci_chain(conn, height, chain_id, is_synced=True):
-    res = conn.db['abci_chains'].fetchFirstExample({'height': height})
-    doc = res[0] if len(res) > 0 else conn.db['abci_chains'].createDocument()
-    doc.set({'height': height, 'chain_id': chain_id, 'is_synced': is_synced })
-    doc.save()
-    return doc
+    pass
 
 
 @register_query(LocalArangoDBConnection)
 def delete_abci_chain(conn, height):
-    return conn.run(conn.collection('abci_chains')
-        .empty())
+    pass
 
 
 @register_query(LocalArangoDBConnection)
 def get_latest_abci_chain(conn):
-    res = (conn.db['abci_chains']
-        .fetchFirstExample({'height': conn.db['abci_chains'].count() - 1}))
-    return next(res) if len(res) > 0 else None
+    pass
 

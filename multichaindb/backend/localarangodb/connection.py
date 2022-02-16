@@ -1,13 +1,12 @@
 
 import logging
-from pydoc import cli
-from ssl import CERT_REQUIRED
 
-from pyArango import connection
-from pyArango.theExceptions import (
-    AQLFetchError, 
-    ArangoError, 
-    ConnectionError
+from arango import ArangoClient
+
+from arango.exceptions import (
+    ServerConnectionError,
+    ArangoClientError,
+    ArangoServerError
 )
 
 from multichaindb.backend.connection import Connection
@@ -50,7 +49,7 @@ class LocalArangoDBConnection(Connection):
 
     @property
     def db(self):
-        return self.conn[self.dbname]
+        return self.conn.db(self.dbname)
 
     def query(self):
         return Lazy()
@@ -67,13 +66,13 @@ class LocalArangoDBConnection(Connection):
         try:
             try:
                 return query.run(self.conn)
-            except ConnectionError:
+            except ServerConnectionError:
                 logger.warning('Lost connection to the database, '
                                'retrying query.')
                 return query.run(self.conn)
-        except ArangoError as exc:
+        except ServerConnectionError as exc:
             raise ConnectionError from exc
-        except AQLFetchError as exc:
+        except ArangoServerError as exc:
             print(f'DETAILS: {exc.message}')
             raise OperationError from exc
 
@@ -100,16 +99,18 @@ class LocalArangoDBConnection(Connection):
                 self.keyfile is None or self.crlfile is None:
                 # Create url based on host:port
                 url = 'http://{}:{}'.format(self.host, self.port)
-                client = connection.Connection(arangoURL=url, username=self.login, 
-                    password=self.password)
+                client = ArangoClient(hosts=url)
+                if self.login and self.password:
+                    client.db('_system', username=self.login, password=self.password,
+                        verify=True, auth_method='jwt')
             else:
                 # NOTE! Must be implemented!!
                 pass
             # Return pyArango Connection instance
             return client
-        except ConnectionError as exc:
+        except ServerConnectionError as exc:
             logger.info('Exception in _connect(): {}'.format(exc))
             raise ConnectionError(str(exc)) from exc
-        except ArangoError as exc:
+        except ArangoClientError as exc:
             raise ConfigurationError from exc
 

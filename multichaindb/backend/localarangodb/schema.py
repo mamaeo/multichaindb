@@ -3,8 +3,8 @@
 from enum import unique
 import logging
 
-from pyArango.theExceptions import (
-    CreationError
+from arango.exceptions import (
+    CollectionCreateError
 )
 
 from multichaindb import backend
@@ -53,8 +53,8 @@ INDEXES = {
 def create_database(conn, dbname):
     logger.info('Create database `%s`.', dbname)
     # TODO: read and write concerns can be declared here
-    if not conn.conn.hasDatabase(dbname):
-        conn.conn.createDatabase(dbname)
+    if not conn.conn.db('_system').has_database(dbname):
+        conn.conn.create_database(dbname)
 
 
 @register_schema(LocalArangoDBConnection)
@@ -64,8 +64,8 @@ def create_tables(conn, dbname):
         # TODO: read and write concerns can be declared here
         try:
             logger.info(f'Create `{table_name}` table.')
-            conn.conn[dbname].createCollection(name=table_name)
-        except CreationError:
+            conn.conn.db(dbname).create_collection(name=table_name)
+        except CollectionCreateError:
             logger.info(f'Collection {table_name} already exists.')
         # Add here new index for each collection
         create_indexes(conn, dbname, table_name, INDEXES[table_name])
@@ -74,9 +74,9 @@ def create_tables(conn, dbname):
 def create_indexes(conn, dbname, collection, indexes):
     logger.info(f'Ensure secondary indexes for `{collection}`.')
     for fields, kwargs in indexes:
-        conn.conn[dbname][collection].ensureHashIndex(fields, **kwargs)
+        conn.conn.db(dbname)[collection].add_hash_index(fields, **kwargs)
 
 
 @register_schema(LocalArangoDBConnection)
 def drop_database(conn, dbname):
-    del(conn.conn[dbname])
+    conn.conn.db('_system').delete_database(dbname)
