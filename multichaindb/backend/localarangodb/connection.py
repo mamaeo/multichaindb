@@ -99,8 +99,7 @@ class LocalArangoDBConnection(Connection):
             if self.ca_cert is None or self.certfile is None or \
                 self.keyfile is None or self.crlfile is None:
                 # Create url based on host:port
-                #url = 'http://{}:{}'.format(self.host, self.port)
-                url = 'http://192.168.1.145:8529'
+                url = 'http://{}:{}'.format(self.host, self.port)
                 client = ArangoConnection(hosts=url, username=self.login, 
                     password=self.password)
             else:
