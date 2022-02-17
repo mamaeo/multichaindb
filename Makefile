@@ -59,7 +59,7 @@ run: check-deps ## Run MultiChainDB from source (stop it with ctrl+c)
 	# although multichaindb has tendermint and arangodb in depends_on,
 	# launch them first otherwise tendermint will get stuck upon sending yet another log
 	# due to some docker-compose issue; does not happen when containers are run as daemons
-	@$(DC) up --no-deps tendermint multichaindb #arangodb
+	@$(DC) up --no-deps arangodb tendermint multichaindb
 
 start: check-deps ## Run MultiChainDB from source and daemonize it (stop with `make stop`)
 	@$(DC) up -d multichaindb
