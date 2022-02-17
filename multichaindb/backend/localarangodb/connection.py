@@ -7,7 +7,8 @@ from multichaindb.backend.localarangodb.arango import ArangoConnection
 from arango.exceptions import (
     ServerConnectionError,
     ArangoClientError,
-    ArangoServerError
+    ArangoServerError,
+    CursorStateError
 )
 
 from multichaindb.backend.connection import Connection
@@ -73,9 +74,12 @@ class LocalArangoDBConnection(Connection):
                 return query.run(self.conn)
         except ServerConnectionError as exc:
             raise ConnectionError from exc
-        except ArangoServerError as exc:
-            print(f'DETAILS: {exc.message}')
+        except DocumentInsertError as exc:
+            raise DuplicateKeyError from exc
+        except CursorStateError as exc:
+            print(f'DETAILS: {exc.details}')
             raise OperationError from exc
+
 
 
     def _connect(self):
@@ -99,7 +103,8 @@ class LocalArangoDBConnection(Connection):
             if self.ca_cert is None or self.certfile is None or \
                 self.keyfile is None or self.crlfile is None:
                 # Create url based on host:port
-                url = 'http://{}:{}'.format(self.host, self.port)
+                #url = 'http://{}:{}'.format(self.host, self.port)
+                url = 'http://192.168.1.145:8529'
                 client = ArangoConnection(hosts=url, username=self.login, 
                     password=self.password)
             else:

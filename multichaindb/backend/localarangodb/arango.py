@@ -1,5 +1,8 @@
 
 from arango import ArangoClient
+from arango.exceptions import (
+    DocumentGetError
+)
 
 class ArangoConnection(ArangoClient):
 

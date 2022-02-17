@@ -3,7 +3,8 @@
 """Query implementation for arangoDB"""
 
 from arango.exceptions import (
-    DocumentInsertError
+    DocumentInsertError,
+    DocumentGetError
 )
 
 from multichaindb import backend
@@ -158,9 +159,11 @@ def store_pre_commit_state(conn, state):
 
 @register_query(LocalArangoDBConnection)
 def get_pre_commit_state(conn):
-    next(conn.run(conn.collection('pre_commit')
-        .all(limit=1)), None)
-
+    try:
+        next(conn.run(conn.collection('pre_commit')
+            .all(limit=1)), None)
+    except DocumentGetError:
+        return None
 
 # Non va bene
 @register_query(LocalArangoDBConnection)
