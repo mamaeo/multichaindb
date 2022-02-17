@@ -8,7 +8,7 @@ from arango.exceptions import (
 )
 
 from multichaindb import backend
-from multichaindb.backend.exceptions import DuplicateKeyError
+from multichaindb.backend.exceptions import DuplicateKeyError, OperationError
 from multichaindb.backend.utils import module_dispatch_registrar
 from multichaindb.backend.localarangodb.connection import LocalArangoDBConnection
 from multichaindb.common.transaction import Transaction
@@ -160,10 +160,20 @@ def store_pre_commit_state(conn, state):
 @register_query(LocalArangoDBConnection)
 def get_pre_commit_state(conn):
     try:
+<<<<<<< HEAD
         next(conn.run(conn.collection('pre_commit')
             .all(limit=1)), None)
     except DocumentGetError:
         return None
+=======
+        # This function can be called before database initialization
+        # This is why it required to handle Exception
+        return next(conn.run(conn.collection('pre_commit')
+            .all(limit=1)), None)
+    except DocumentGetError:
+        return None
+
+>>>>>>> e97d6550d98f0e7437d90bc919916f8b93e0e6e6
 
 # Non va bene
 @register_query(LocalArangoDBConnection)
