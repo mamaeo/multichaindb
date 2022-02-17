@@ -1,20 +1,19 @@
 
 import logging
-from pydoc import cli
-from ssl import CERT_REQUIRED
 
 from multichaindb.backend.localarangodb.arango import ArangoConnection
 from arango.exceptions import (
     ServerConnectionError,
     ArangoClientError,
-    ArangoServerError,
+    DocumentInsertError,
     CursorStateError
 )
 
 from multichaindb.backend.connection import Connection
 from multichaindb.backend.exceptions import (
     OperationError,
-    ConnectionError
+    ConnectionError,
+    DuplicateKeyError
 )
 
 from multichaindb.backend.utils import get_multichaindb_config_value

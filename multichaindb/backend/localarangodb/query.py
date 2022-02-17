@@ -37,7 +37,7 @@ def get_transactions(conn, transaction_ids):
 @register_query(LocalArangoDBConnection)
 def store_metadatas(conn, metadata):
     return conn.run(conn.collection('metadata')
-        .insert_many(store_metadatas))
+        .insert_many(metadata))
 
 
 @register_query(LocalArangoDBConnection)
@@ -154,22 +154,23 @@ def get_unspent_outputs(conn, *, query=None):
 @register_query(LocalArangoDBConnection)
 def store_pre_commit_state(conn, state):
     return conn.run(conn.collection('pre_commit')
-        .insert(state, overwrite=True))
+        .update_match({'height': state['height']}, state))
 
 
 @register_query(LocalArangoDBConnection)
 def get_pre_commit_state(conn):
     try:
         next(conn.run(conn.collection('pre_commit')
-            .all(limit=1)), None)
+            .all(limit=1)), None)   
     except DocumentGetError:
         return None
 
-# Non va bene
+
 @register_query(LocalArangoDBConnection)
 def store_validator_set(conn, validators_update):
     return conn.run(conn.collection('validators')
-        .insert(validators_update, overwrite=True))
+        .update_match({'height': validators_update['height']}, 
+            validators_update))
 
 
 @register_query(LocalArangoDBConnection)
