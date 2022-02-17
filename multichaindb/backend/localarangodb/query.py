@@ -186,7 +186,8 @@ def store_elections(conn, elections):
 
 @register_query(LocalArangoDBConnection)
 def delete_elections(conn, height):
-    pass
+    return conn.run(conn.collection('elections')
+        .delete_match({'height': height}))
 
 
 @register_query(LocalArangoDBConnection)
@@ -196,7 +197,9 @@ def get_validator_set(conn, height=None):
 
 @register_query(LocalArangoDBConnection)
 def get_election(conn, election_id):
-    pass
+    return next(conn.run(conn.collection('elections')
+        .find(filter={'election_id': election_id, 
+            'height': conn.db['elections'].count() - 1})), None)
 
 
 @register_query(LocalArangoDBConnection)
