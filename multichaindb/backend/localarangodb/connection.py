@@ -1,8 +1,9 @@
 
 import logging
+from pydoc import cli
+from ssl import CERT_REQUIRED
 
-from arango import ArangoClient
-
+from multichaindb.backend.localarangodb.arango import ArangoConnection
 from arango.exceptions import (
     ServerConnectionError,
     ArangoClientError,
@@ -49,7 +50,7 @@ class LocalArangoDBConnection(Connection):
 
     @property
     def db(self):
-        return self.conn.db(self.dbname)
+        return self.conn[self.dbname]
 
     def query(self):
         return Lazy()
@@ -98,11 +99,10 @@ class LocalArangoDBConnection(Connection):
             if self.ca_cert is None or self.certfile is None or \
                 self.keyfile is None or self.crlfile is None:
                 # Create url based on host:port
-                url = 'http://{}:{}'.format(self.host, self.port)
-                client = ArangoClient(hosts=url)
-                if self.login and self.password:
-                    client.db('_system', username=self.login, password=self.password,
-                        verify=True, auth_method='jwt')
+                #url = 'http://{}:{}'.format(self.host, self.port)
+                url = 'http://192.168.1.145:8529'
+                client = ArangoConnection(hosts=url, username=self.login, 
+                    password=self.password)
             else:
                 # NOTE! Must be implemented!!
                 pass
@@ -113,4 +113,3 @@ class LocalArangoDBConnection(Connection):
             raise ConnectionError(str(exc)) from exc
         except ArangoClientError as exc:
             raise ConfigurationError from exc
-

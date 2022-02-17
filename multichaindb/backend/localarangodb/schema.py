@@ -1,6 +1,4 @@
 
-
-from enum import unique
 import logging
 
 from arango.exceptions import (
@@ -53,7 +51,7 @@ INDEXES = {
 def create_database(conn, dbname):
     logger.info('Create database `%s`.', dbname)
     # TODO: read and write concerns can be declared here
-    if not conn.conn.db('_system').has_database(dbname):
+    if not conn.conn.has_database(dbname):
         conn.conn.create_database(dbname)
 
 
@@ -64,7 +62,7 @@ def create_tables(conn, dbname):
         # TODO: read and write concerns can be declared here
         try:
             logger.info(f'Create `{table_name}` table.')
-            conn.conn.db(dbname).create_collection(name=table_name)
+            conn.conn[dbname].create_collection(name=table_name)
         except CollectionCreateError:
             logger.info(f'Collection {table_name} already exists.')
         # Add here new index for each collection
@@ -74,9 +72,9 @@ def create_tables(conn, dbname):
 def create_indexes(conn, dbname, collection, indexes):
     logger.info(f'Ensure secondary indexes for `{collection}`.')
     for fields, kwargs in indexes:
-        conn.conn.db(dbname)[collection].add_hash_index(fields, **kwargs)
+        conn.conn[dbname][collection].add_hash_index(fields, **kwargs)
 
 
 @register_schema(LocalArangoDBConnection)
 def drop_database(conn, dbname):
-    conn.conn.db('_system').delete_database(dbname)
+    conn.conn.delete_database(dbname)
