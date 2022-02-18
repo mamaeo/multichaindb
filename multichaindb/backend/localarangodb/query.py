@@ -24,14 +24,18 @@ def store_transactions(conn, signed_transactions):
 
 @register_query(LocalArangoDBConnection)
 def get_transaction(conn, transaction_id):
+    ''' collection(name).get function require a _id or _key document which
+    are not the same we are passing through parameter transaction_id '''
     return conn.run(conn.collection('transactions')
-        .get(transaction_id))
+        .find({'transaction_id': transaction_id}))
 
 
 @register_query(LocalArangoDBConnection)
 def get_transactions(conn, transaction_ids):
-    return conn.run(conn.collection('transactions')
-        .get_many(transaction_ids))
+    return conn.run(conn.aql.execute(
+        "FOR tx IN transactions " \
+        "FILTER tx.transaction_id IN @ids RETURN tx", 
+            bind_vars={'ids': transaction_ids}))
 
 
 @register_query(LocalArangoDBConnection)
@@ -42,17 +46,16 @@ def store_metadatas(conn, metadata):
 
 @register_query(LocalArangoDBConnection)
 def get_metadata(conn, transaction_ids):
-    return conn.run(conn.collection('metadata')
-        .get_many(transaction_ids))
+    return conn.run(conn.aql.execute(
+        "FOR meta IN metadata " \
+        "FILTER meta.transaction_id IN @ids RETURN meta",
+            bind_vars={'ids': transaction_ids}))
 
 
 @register_query(LocalArangoDBConnection)
 def store_asset(conn, asset):
-    try:
-        return conn.run(conn.collection('assets')
-            .insert(asset))
-    except DocumentInsertError:
-        pass
+    return conn.run(conn.collection('assets')
+        .insert(asset))
 
 
 @register_query(LocalArangoDBConnection)
@@ -63,17 +66,16 @@ def store_assets(conn, assets):
 
 @register_query(LocalArangoDBConnection)
 def get_asset(conn, asset_id):
-    try:
-        return conn.run(conn.collection('assets')
-            .get(asset_id))
-    except IndexError:
-        pass
+    return conn.run(conn.collection('assets')
+        .find({'asset_id': asset_id}))
 
 
 @register_query(LocalArangoDBConnection)
 def get_assets(conn, asset_ids):
-    return conn.run(conn.collection('assets')
-        .get_many(asset_ids))
+    return conn.run(conn.aql.execute(
+        "FOR asset in assets " \
+        "FILTER asset.asset_id IN @ids RETURN asset",
+            bind_vars={'ids': asset_ids}))
 
 
 @register_query(LocalArangoDBConnection)
@@ -83,17 +85,16 @@ def get_spent(conn, transaction_id, output):
 
 @register_query(LocalArangoDBConnection)
 def get_latest_block(conn):
-    return next(conn.run(conn.collection('blocks')
-        .find({'height': conn.db['blocks'].count() - 1})), None)
+    return next(conn.run(
+        conn.aql.execute("FOR blk IN blocks " \
+            "SORT blk.height DESC LIMIT 1 RETURN blk")), None)
 
 
 @register_query(LocalArangoDBConnection)
 def store_block(conn, block):
-    try:
-        return conn.run(conn.collection('blocks')
-            .insert(block))
-    except DocumentInsertError:
-        pass
+    return conn.run(conn.aql.execute(
+        "INSERT @blk INTO blocks OPTIONS {ignoreErrors: true}", 
+            bind_vars={'blk': block}))
 
 
 @register_query(LocalArangoDBConnection)
@@ -153,8 +154,10 @@ def get_unspent_outputs(conn, *, query=None):
 
 @register_query(LocalArangoDBConnection)
 def store_pre_commit_state(conn, state):
-    return conn.run(conn.collection('pre_commit')
-        .update_match({'height': state['height']}, state))
+    return conn.run(conn.aql.execute(
+        'UPSERT {height: @height} ' \
+        'INSERT @state UPDATE @state IN pre_commit',
+            bind_vars={'height': state['height'], 'state': state}))
 
 
 @register_query(LocalArangoDBConnection)
@@ -168,9 +171,11 @@ def get_pre_commit_state(conn):
 
 @register_query(LocalArangoDBConnection)
 def store_validator_set(conn, validators_update):
-    return conn.run(conn.collection('validators')
-        .update_match({'height': validators_update['height']}, 
-            validators_update))
+    return conn.run(conn.aql.execute(
+        "UPSERT {height: @height} " \
+        "INSERT @update UPDATE @update IN validators",
+            bind_vars={'height': validators_update['height'],
+            'update': validators_update}))
 
 
 @register_query(LocalArangoDBConnection)
@@ -201,9 +206,9 @@ def get_validator_set(conn, height=None):
 
 @register_query(LocalArangoDBConnection)
 def get_election(conn, election_id):
-    return next(conn.run(conn.collection('elections')
-        .find(filter={'election_id': election_id, 
-            'height': conn.db['elections'].count() - 1})), None)
+    return next(conn.run(
+        conn.aql.execute('FOR election IN elections ' \
+            "SORT election.height DESC LIMIT 1 RETURN election")), None)
 
 
 @register_query(LocalArangoDBConnection)
@@ -213,9 +218,11 @@ def get_asset_tokens_for_public_key(conn, asset_id, public_key):
 
 @register_query(LocalArangoDBConnection)
 def store_abci_chain(conn, height, chain_id, is_synced=True):
-    return conn.run(conn.collection('abci_chains')
-        .insert({'height': height, 'chain_id': chain_id, 'is_synced': is_synced}, 
-            overwrite=True))
+    return conn.run(conn.aql.execute(
+        'UPSERT { height: @height }' \
+        "INSERT @blk UPDATE @blk IN abci_chains", 
+            bind_vars={'height': height, 'blk': {'height': height, 'chain_id': chain_id, 
+                'is_synced': is_synced}}))
 
 
 @register_query(LocalArangoDBConnection)
@@ -226,5 +233,6 @@ def delete_abci_chain(conn, height):
 
 @register_query(LocalArangoDBConnection)
 def get_latest_abci_chain(conn):
-    return next(conn.run(conn.collection('abci_chains')
-        .find({'height': conn.db['abci_chains'].count() - 1})), None)
+    return next(conn.run(
+        conn.aql.execute("FOR chain IN abci_chains " \
+            "SORT chain.height DESC LIMIT 1 RETURN chain")), None)

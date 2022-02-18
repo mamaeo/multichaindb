@@ -63,6 +63,15 @@ class LocalArangoDBConnection(Connection):
         """
         return self.query()[self.dbname][name]
 
+    @property
+    def aql(self):
+        '''Return a lazy object that can be used to compose a query
+        
+        Args:
+            query (str): aql query to execute
+        '''
+        return self.query()[self.dbname].aql
+
     def run(self, query):
         try:
             try:
