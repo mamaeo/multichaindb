@@ -24,18 +24,18 @@ def store_transactions(conn, signed_transactions):
 
 @register_query(LocalArangoDBConnection)
 def get_transaction(conn, transaction_id):
-    ''' collection(name).get function require a _id or _key document which
-    are not the same we are passing through parameter transaction_id '''
-    return conn.run(conn.collection('transactions')
-        .find({'transaction_id': transaction_id}))
+    return next(conn.run(conn.aql.execute(
+        'FOR tx IN transactions ' \
+        'FILTER tx.id == @id RETURN UNSET(tx, "_id", "_key", "_rev")',
+            bind_vars={'id': transaction_id})), None)
 
 
 @register_query(LocalArangoDBConnection)
 def get_transactions(conn, transaction_ids):
-    return conn.run(conn.aql.execute(
+    return list(conn.run(conn.aql.execute(
         "FOR tx IN transactions " \
-        "FILTER tx.transaction_id IN @ids RETURN tx", 
-            bind_vars={'ids': transaction_ids}))
+        'FILTER tx.transaction_id IN @ids RETURN UNSET(tx, "_id", "_key", "_rev")', 
+            bind_vars={'ids': transaction_ids})))
 
 
 @register_query(LocalArangoDBConnection)
@@ -46,11 +46,10 @@ def store_metadatas(conn, metadata):
 
 @register_query(LocalArangoDBConnection)
 def get_metadata(conn, transaction_ids):
-    return conn.run(conn.aql.execute(
+    return list(conn.run(conn.aql.execute(
         "FOR meta IN metadata " \
-        "FILTER meta.transaction_id IN @ids RETURN meta",
-            bind_vars={'ids': transaction_ids}))
-
+        'FILTER meta.id IN @ids RETURN UNSET(meta, "_id", "_key", "_rev")',
+            bind_vars={'ids': transaction_ids})))
 
 @register_query(LocalArangoDBConnection)
 def store_asset(conn, asset):
@@ -66,15 +65,17 @@ def store_assets(conn, assets):
 
 @register_query(LocalArangoDBConnection)
 def get_asset(conn, asset_id):
-    return conn.run(conn.collection('assets')
-        .find({'asset_id': asset_id}))
+    return next(conn.run(conn.aql.execute(
+        'FOR asset IN assets ' \
+        'FILTER asset == @id RETURN UNSET(asset, "_id", "_key", "_rev")',
+            bind_vars={'id': asset_id})), None)
 
 
 @register_query(LocalArangoDBConnection)
 def get_assets(conn, asset_ids):
     return conn.run(conn.aql.execute(
         "FOR asset in assets " \
-        "FILTER asset.asset_id IN @ids RETURN asset",
+        'FILTER asset.id IN @ids RETURN UNSET(asset, "_id", "_key", "_rev")',
             bind_vars={'ids': asset_ids}))
 
 
@@ -85,9 +86,10 @@ def get_spent(conn, transaction_id, output):
 
 @register_query(LocalArangoDBConnection)
 def get_latest_block(conn):
-    return next(conn.run(
-        conn.aql.execute("FOR blk IN blocks " \
-            "SORT blk.height DESC LIMIT 1 RETURN blk")), None)
+    return next(conn.run(conn.aql.execute(
+        "FOR blk IN blocks " \
+        'SORT blk.height DESC LIMIT 1 ' \
+        'RETURN UNSET(blk, "_id", "_key", "_rev")')), None)
 
 
 @register_query(LocalArangoDBConnection)
@@ -208,7 +210,8 @@ def get_validator_set(conn, height=None):
 def get_election(conn, election_id):
     return next(conn.run(
         conn.aql.execute('FOR election IN elections ' \
-            "SORT election.height DESC LIMIT 1 RETURN election")), None)
+            'SORT election.height DESC LIMIT 1 ' \
+            'RETURN UNSET(election, "_id", "_key", "_rev")')), None)
 
 
 @register_query(LocalArangoDBConnection)
@@ -235,4 +238,5 @@ def delete_abci_chain(conn, height):
 def get_latest_abci_chain(conn):
     return next(conn.run(
         conn.aql.execute("FOR chain IN abci_chains " \
-            "SORT chain.height DESC LIMIT 1 RETURN chain")), None)
+            "SORT chain.height DESC LIMIT 1 "
+            'RETURN UNSET(chain, "_id", "_key", "_rev")')), None)

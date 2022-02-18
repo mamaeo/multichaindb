@@ -38,7 +38,7 @@ properties:
     "$ref": "#/definitions/metadata"
   version:
     type: string
-    pattern: "^2\\.0$"
+    pattern: "^1\\.0$"
 definitions:
   offset:
     type: integer

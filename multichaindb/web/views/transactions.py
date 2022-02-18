@@ -89,16 +89,16 @@ class TransactionListApi(Resource):
                 'Invalid transaction ({}): {}'.format(type(e).__name__, e)
             )
 
-        with pool() as bigchain:
+        with pool() as multichain:
             try:
-                bigchain.validate_transaction(tx_obj)
+                multichain.validate_transaction(tx_obj)
             except ValidationError as e:
                 return make_error(
                     400,
                     'Invalid transaction ({}): {}'.format(type(e).__name__, e)
                 )
             else:
-                status_code, message = bigchain.write_transaction(tx_obj, mode)
+                status_code, message = multichain.write_transaction(tx_obj, mode)
 
         if status_code == 202:
             response = jsonify(tx)

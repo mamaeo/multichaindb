@@ -508,7 +508,7 @@ class Transaction(object):
     CREATE = 'CREATE'
     TRANSFER = 'TRANSFER'
     ALLOWED_OPERATIONS = (CREATE, TRANSFER)
-    VERSION = '2.0'
+    VERSION = '1.0'
 
     def __init__(self, operation, asset, inputs=None, outputs=None,
                  metadata=None, version=None, hash_id=None, tx_dict=None):
@@ -1178,7 +1178,7 @@ class Transaction(object):
             raise InvalidHash('No transaction id found!')
 
         tx_body['id'] = None
-
+        
         tx_body_serialized = Transaction._to_str(tx_body)
         valid_tx_id = Transaction._to_hash(tx_body_serialized)
 
