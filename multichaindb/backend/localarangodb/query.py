@@ -67,7 +67,7 @@ def store_assets(conn, assets):
 def get_asset(conn, asset_id):
     return next(conn.run(conn.aql.execute(
         'FOR asset IN assets ' \
-        'FILTER asset == @id RETURN UNSET(asset, "_id", "_key", "_rev")',
+        'FILTER asset.id == @id RETURN UNSET(asset, "_id", "_key", "_rev")',
             bind_vars={'id': asset_id})), None)
 
 
