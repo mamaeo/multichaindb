@@ -106,10 +106,10 @@ setup(
         "built-in asset support, MultiChainDB is like a database with blockchain "
         "characteristics."
         ),
-    url='https://github.com/MultiChainDB/multichaindb/',
-    author='MultiChainDB Contributors',
+    url='https://github.com/mamaeo/multichaindb',
+    author='Matteo Piacentini',
     author_email='matteo.piacentini3@studenti.unimi.it',
-    license='Apache Software License 2.0',
+    license='Apache Software License 3.0',
     zip_safe=False,
     python_requires='>=3.6',
     classifiers=[
