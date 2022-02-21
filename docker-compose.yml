@@ -32,7 +32,7 @@ services:
       - ./tox.ini:/usr/src/app/tox.ini
     environment:
       MULTICHAINDB_DATABASE_BACKEND: localarangodb
-      MULTICHAINDB_DATABASE_HOST: localhost
+      MULTICHAINDB_DATABASE_HOST: arangodb
       MULTICHAINDB_DATABASE_PORT: 8529
       MULTICHAINDB_SERVER_BIND: 0.0.0.0:9984
       MULTICHAINDB_WSSERVER_HOST: 0.0.0.0
