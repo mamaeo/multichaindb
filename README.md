@@ -13,7 +13,7 @@ MultichainDB è una soluzione privata o permissioned che utilizza un protocollo 
 ## Testare MultiChainDB 
 Per eseguire e testare l'ultima versione di MultiChainDB è necessario munirsi della versione più recente di [Docker Compose](https://docs.docker.com/compose/install/). Una volta installato, basterà clonare questo repository attraverso il comando:
 ```text
-git clone https://github.com/multichaindb/multichaindb.git
+git clone https://github.com/mamaeo/multichaindb.git
 cd multichaindb
 make run
 ```
