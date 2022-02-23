@@ -1,46 +1,41 @@
 <!---
-Copyright © 2020 Interplanetary Database Association e.V.,
-BigchainDB and IPDB software contributors.
-SPDX-License-Identifier: (Apache-2.0 AND CC-BY-4.0)
-Code is Apache-2.0 and docs are CC-BY-4.0
---->
-
-<!--- There is no shield to get the latest version
-(including pre-release versions) from PyPI,
-so show the latest GitHub release instead.
+Copyright © 2022 Matteo Piacentini,
+MultiChainDB.
+SPDX-License-Identifier: (Apache-3.0 AND CC-BY-4.0)
+Code is Apache-3.0 and docs are CC-BY-4.0
 --->
 
 # MultiChainDB Server
 
-MultiChainDB is the blockchain database.
+MultiChainDB è un database noSql scalabile con degli aspetti legati al mondo blockchain. 
+Tale piattaforma garantisce infatti l'efficienza nella gestione delle transazioni tipiche dei database e la sicurezza ed immutabilità garantite 
+da una piattaforma blockchain. 
+MultichainDB è una soluzione privata o permissioned che utilizza un protocollo di votazione per la gestione delle transazioni e validazione dei blocchi, oltre ad un protocollo molto efficiente per la replicazione attraverso una rete peer to peer chiamato Tendermint.
 
-## Run and Test MultiChainDB Server from the `master` Branch
-
-Running and testing the latest version of MultiChainDB Server is easy. Make sure you have a recent version of [Docker Compose](https://docs.docker.com/compose/install/) installed. When you are ready, fire up a terminal and run:
-
+## Testare MultiChainDB 
+Per eseguire e testare l'ultima versione di MultiChainDB è necessario munirsi della versione più recente di [Docker Compose](https://docs.docker.com/compose/install/). Una volta installato, basterà clonare questo repository attraverso il comando:
 ```text
 git clone https://github.com/multichaindb/multichaindb.git
 cd multichaindb
 make run
 ```
 
-MultiChainDB should be reachable now on `http://localhost:9984/`.
+MultiChainDB offre un servizio di API per interagire con il database raggiungibile attraverso la porta (di default) 9984.
 
-There are also other commands you can execute:
+I comandi eseguibili sono:
 
-* `make start`: Run MultiChainDB from source and daemonize it (stop it with `make stop`).
+* `make start`: Esegui MultiChainDB in background (termina la sua esecuzione digitando `make stop`).
 * `make stop`: Stop MultiChainDB.
-* `make logs`: Attach to the logs.
-* `make test`: Run all unit and acceptance tests.
-* `make test-unit-watch`: Run all tests and wait. Every time you change code, tests will be run again.
-* `make cov`: Check code coverage and open the result in the browser.
-* `make doc`: Generate HTML documentation and open it in the browser.
-* `make clean`: Remove all build, test, coverage and Python artifacts.
-* `make reset`: Stop and REMOVE all containers. WARNING: you will LOSE all data stored in BigchainDB.
+* `make logs`: Aggancia i logs.
+* `make clean`: Rimuove tutti gli artifatti Python generati con l'esecuzione.
+* `make reset`: Termina e rimuove tutti i container Docker. Attenzione che perderai tutti i tuoi dati salvati
 
-To view all commands available, run `make`.
+Eseguire make per visualizzare tutti i comandi disponibili.
 
 ## Legal
+
+MultiChainDB è una fork di un'altra piattaforma chiamata BigChainDB che utilizza un database document-based come servizio noSql.
+I file non modificati sono soggetti a CopyRight di BigChainDB.
 
 * [Licenses](LICENSES.md) - open source & open content
 * [Contact Me](matteo.piacentini3@studenti.unimi.it)
