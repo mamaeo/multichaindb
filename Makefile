@@ -70,33 +70,7 @@ stop: check-deps ## Stop MultiChainDB
 logs: check-deps ## Attach to the logs
 	@$(DC) logs -f multichaindb
 
-test: check-deps test-unit test-acceptance ## Run unit and acceptance tests
-
-test-unit: check-deps ## Run all tests once
-	@$(DC) up -d bdb
-	@$(DC) exec multichaindb pytest
-
-test-unit-watch: check-deps ## Run all tests and wait. Every time you change code, tests will be run again
-	@$(DC) run --rm --no-deps multichaindb pytest -f
-
-test-acceptance: check-deps ## Run all acceptance tests
-	@./run-acceptance-test.sh
-
-cov: check-deps ## Check code coverage and open the result in the browser
-	@$(DC) run --rm multichaindb pytest -v --cov=multichaindb --cov-report html
-	$(BROWSER) htmlcov/index.html
-
-doc: check-deps ## Generate HTML documentation and open it in the browser
-	@$(DC) run --rm --no-deps bdocs make -C docs/root html
-	@$(DC) run --rm --no-deps bdocs make -C docs/server html
-	@$(DC) run --rm --no-deps bdocs make -C docs/contributing html
-	$(BROWSER) docs/root/build/html/index.html
-
-doc-acceptance: check-deps ## Create documentation for acceptance tests
-	@$(DC) run --rm python-acceptance pycco -i -s /src -d /docs
-	$(BROWSER) acceptance/python/docs/index.html
-
-clean: clean-build clean-pyc clean-test ## Remove all build, test, coverage and Python artifacts
+clean: clean-build clean-pyc ## Remove all build, coverage and Python artifacts
 	@$(ECHO) "Cleaning was successful."
 
 reset: check-deps ## Stop and REMOVE all containers. WARNING: you will LOSE all data stored in BigchainDB.
@@ -136,9 +110,3 @@ clean-pyc: # Remove Python file artifacts
 	@find . -name '*.pyo' -exec rm -f {} +
 	@find . -name '*~' -exec rm -f {} +
 	@find . -name '__pycache__' -exec rm -fr {} +
-
-clean-test: # Remove test and coverage artifacts
-	@find . -name '.pytest_cache' -exec rm -fr {} +
-	@rm -fr .tox/
-	@rm -f .coverage
-	@rm -fr htmlcov/
