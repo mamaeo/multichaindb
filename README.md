@@ -7,7 +7,7 @@ Code is Apache-3.0 and docs are CC-BY-4.0
 
 # MultiChainDB Server
 
-MultiChainDB è un noSql decentralizzato e scalabile con tutte le caratteristiche tipiche di una blockchain, garantendo l'efficienza nella gestione delle transazioni tipiche dei database e la sicurezza ed immutabilità garantite dagli elementi di crittografia. 
+MultiChainDB è un noSql multimodello decentralizzato e scalabile con tutte le caratteristiche tipiche di una blockchain, garantendo l'efficienza nella gestione delle transazioni tipiche dei database e la sicurezza ed immutabilità garantite dagli elementi di crittografia. 
 MultichainDB è una soluzione privata o permissioned che utilizza un protocollo di votazione per la gestione delle transazioni e validazione dei blocchi, oltre ad un protocollo molto efficiente per la replicazione attraverso la rete peer to peer chiamato Tendermint.
 
 ## Testare MultiChainDB 
